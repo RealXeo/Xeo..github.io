@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XEO | System Elite</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.158.0/three.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #000000;
+            --card-glass: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.25);
+            --text-main: #ffffff;
+            --text-dim: #888888;
+            --discord-color: #5865F2;
+            --github-color: #333;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; }
+        body { background: var(--bg); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+
+        /* --- Key System Overlay --- */
+        #key-auth-gate {
+            position: fixed; inset: 0; background: #000; z-index: 20000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .key-card {
+            background: var(--card-glass); border: 1px solid var(--border);
+            padding: 40px; border-radius: 24px; text-align: center; width: 90%; max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+        .hwid-display {
+            font-family: 'Fira Code', monospace; font-size: 0.65rem; color: #444;
+            background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px;
+            margin-top: 20px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .key-input-field {
+            width: 100%; background: #000; border: 1px solid var(--border);
+            padding: 15px; border-radius: 10px; color: #fff; text-align: center;
+            margin: 20px 0; font-family: 'Fira Code', monospace; outline: none;
+        }
+        .key-input-field:focus { border-color: #fff; }
+
+        /* --- Main Content --- */
+        #main-site-content { opacity: 0; pointer-events: none; transition: opacity 0.8s ease; }
+
+        .white-glow {
+            position: fixed; width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: -1; filter: blur(80px);
+        }
+
+        #cursor { position: fixed; width: 6px; height: 6px; background: #fff; border-radius: 50%; pointer-events: none; z-index: 30000; box-shadow: 0 0 10px #fff; }
+        #cursor-follower { position: fixed; width: 35px; height: 35px; border: 1.5px solid #fff; border-radius: 50%; pointer-events: none; z-index: 30000; }
+
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 25px 8%; backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--border); background: rgba(0, 0, 0, 0.8);
+        }
+        .logo-container { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.6rem; cursor: pointer; }
+        .arrow-logo { width: 26px; fill: #fff; filter: drop-shadow(0 0 5px #fff); }
+
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { text-decoration: none; color: var(--text-dim); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+
+        .tab-content { display: none; padding-top: 150px; opacity: 0; }
+        .tab-content.active { display: block; opacity: 1; }
+        .bento { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; padding: 0 40px 100px; }
+        .card { background: var(--card-glass); border: 1px solid var(--border); border-radius: 20px; padding: 30px; position: relative; overflow: hidden; transition: 0.3s; }
+        .card:hover { border-color: #fff; background: rgba(255, 255, 255, 0.12); }
+
+        .col-12 { grid-column: span 12; } .col-8 { grid-column: span 8; } .col-6 { grid-column: span 6; } .col-4 { grid-column: span 4; }
+        .hero-title { font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; letter-spacing: -4px; line-height: 0.9; margin-bottom: 25px; }
+        .label { color: #fff; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; opacity: 0.5; margin-bottom: 10px; display: block; }
+        
+        .btn-white {
+            background: #fff; color: #000; padding: 18px 40px; border-radius: 8px;
+            font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 12px;
+            transition: 0.3s; font-size: 0.9rem; text-transform: uppercase; cursor: pointer; border: none;
+        }
+        .btn-white:hover { transform: scale(1.03); box-shadow: 0 0 30px rgba(255,255,255,0.4); }
+
+        .btn-discord { background: var(--discord-color); color: #fff; border: none; }
+        .btn-github { background: var(--github-color); color: #fff; border: 1px solid #444; }
+
+        .terminal { background: #000; border: 1px solid #333; border-radius: 12px; padding: 20px; font-family: 'Fira Code', monospace; height: 300px; overflow-y: auto; color: #aaa; font-size: 0.8rem; line-height: 1.6; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table td { padding: 15px 0; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+<div id="key-auth-gate">
+    <div class="key-card">
+        <svg class="arrow-logo" style="width: 40px; margin-bottom: 20px;" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+        <h2 style="letter-spacing: -1px;">XEO Authentication</h2>
+        <p style="color: var(--text-dim); font-size: 0.8rem; margin-top: 8px;">Enter your access key to initialize Xeo Core.</p>
+        
+        <input type="text" id="user-key-input" class="key-input-field" placeholder="ENTER ACCESS KEY">
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <button class="btn-white" style="background: transparent; border: 1px solid var(--border); color: #fff;" onclick="window.open('https://linkvertise.com', '_blank')">Get Key</button>
+            <button class="btn-white" onclick="checkKey()">Verify</button>
+        </div>
+
+        <div id="hwid-tag" class="hwid-display">HWID: FETCHING...</div>
+    </div>
+</div>
+
+<div id="cursor"></div>
+<div id="cursor-follower"></div>
+
+<div id="main-site-content">
+    <div class="white-glow"></div>
+    <nav>
+        <div class="logo-container" onclick="switchTab('home')">
+            <svg class="arrow-logo" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+            XEO
+        </div>
+        <div class="nav-links">
+            <a onclick="switchTab('home')" class="active" id="n-home">Core</a>
+            <a onclick="switchTab('about')" id="n-about">Intelligence</a>
+            <a onclick="switchTab('executor')" id="n-executor">Executor</a>
+            <a onclick="switchTab('download')" id="n-download">Retrieve</a>
+            <a onclick="switchTab('credits')" id="n-credits">Registry</a>
+            <a onclick="switchTab('donate')" id="n-donate">Fuel</a>
+        </div>
+    </nav>
+
+    <section id="home" class="tab-content active">
+        <div class="bento">
+            <div class="col-8">
+                <h1 class="hero-title">POWERED<br>EXTERNAL.</h1>
+                <p style="color: var(--text-dim); margin-bottom: 40px; max-width: 450px;">High-speed execution with absolute stability. Authentication successful.</p>
+                <a onclick="switchTab('download')" class="btn-white">Retrieve Files <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg></a>
+            </div>
+            <div class="card col-4">
+                <span class="label">Uptime Stat</span>
+                <h2 style="font-size: 4rem; letter-spacing: -2px;">99.9%</h2>
+                <div id="globe-mount" style="height: 150px;"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="tab-content">
+        <div class="bento">
+            <div class="card col-8">
+                <span class="label">Community</span>
+                <h2 style="margin-bottom: 15px;">Join the Ecosystem</h2>
+                <p style="color: var(--text-dim); margin-bottom: 30px;">Get support, stay updated with patches, and discuss scripts in our official Discord server.</p>
+                <a href="https://discord.gg/NNub649fHK" target="_blank" class="btn-white btn-discord">Join Discord Server</a>
+            </div>
+            <div class="card col-4">
+                <span class="label">Architecture</span>
+                <h2>Zero-Footprint</h2>
+                <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 10px;">Xeo uses heuristic analysis to maintain undetectability.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="executor" class="tab-content">
+        <div class="bento"><div class="card col-12"><span class="label">Live Web Instance</span><div class="terminal" id="term-box">> Initializing Xeo Web Terminal...<br>> Ready for Script Input.<span class="term-cursor"></span></div></div></div>
+    </section>
+
+    <section id="download" class="tab-content">
+        <div class="bento">
+            <div class="card col-12" style="text-align: center; padding: 80px 20px;">
+                <span class="label">Latest Release</span>
+                <h1 style="font-size: 4rem; margin: 10px 0;">Build 1.3.15</h1>
+                <p style="color: var(--text-dim); margin-bottom: 40px;">Securely download Xeo via our GitHub repository.</p>
+                
+                <a href="https://github.com/RealXeo/Xeo/releases/download/xeo/Xeo.rar" target="_blank" class="btn-white btn-github">
+                    Download via GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="credits" class="tab-content">
+        <div class="bento"><div class="card col-12"><table class="data-table"><tr><td><b>Rizve</b></td><td>Owner & Lead</td></tr></table></div></div>
+    </section>
+
+    <section id="donate" class="tab-content">
+        <div class="bento"><div class="card col-6"><h2>Fueling</h2><p style="color:var(--text-dim); margin:20px 0;">Support Xeo development.</p><div class="btn-white">$RizveA</div></div></div>
+    </section>
+</div>
+
+<script>
+    const CORRECT_KEY = "XEO-2026"; 
+
+    function generateFakeHWID() {
+        const chars = 'ABCDEF0123456789';
+        let hwid = '';
+        for(let i=0; i<16; i++) hwid += chars[Math.floor(Math.random()*16)];
+        document.getElementById('hwid-tag').innerText = "HWID: " + hwid;
+    }
+
+    function checkKey() {
+        const input = document.getElementById('user-key-input').value;
+        if(input === CORRECT_KEY) {
+            gsap.to("#key-auth-gate", { opacity: 0, scale: 1.2, duration: 0.6, onComplete: () => {
+                document.getElementById('key-auth-gate').style.display = 'none';
+                document.getElementById('main-site-content').style.opacity = '1';
+                document.getElementById('main-site-content').style.pointerEvents = 'all';
+                initGlobe();
+            }});
+        } else {
+            gsap.fromTo(".key-card", { x: -10 }, { x: 10, duration: 0.1, repeat: 5, yoyo: true });
+        }
+    }
+
+    function switchTab(id) {
+        const current = document.querySelector('.tab-content.active');
+        const next = document.getElementById(id);
+        if (current === next) return;
+        gsap.to(current, { opacity: 0, y: 15, duration: 0.3, onComplete: () => {
+            current.classList.remove('active');
+            next.classList.add('active');
+            gsap.fromTo(next, { opacity: 0, y: -15 }, { opacity: 1, y: 0, duration: 0.4 });
+        }});
+        document.querySelectorAll('.nav-links a').forEach(a => {
+            a.classList.remove('active');
+            if(a.id === 'n-' + id) a.classList.add('active');
+        });
+    }
+
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    window.addEventListener('mousemove', e => {
+        gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
+        gsap.to(follower, { x: e.clientX - 16, y: e.clientY - 16, duration: 0.12 });
+    });
+
+    function initGlobe() {
+        const mount = document.getElementById('globe-mount');
+        if(!mount) return;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, mount.clientWidth / mount.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(mount.clientWidth, mount.clientHeight);
+        mount.appendChild(renderer.domElement);
+        const points = new THREE.Points(new THREE.IcosahedronGeometry(1, 4), new THREE.PointsMaterial({ color: 0xffffff, size: 0.02 }));
+        scene.add(points);
+        camera.position.z = 2.5;
+        function animate() { requestAnimationFrame(animate); points.rotation.y += 0.01; renderer.render(scene, camera); }
+        animate();
+    }
+
+    window.onload = generateFakeHWID;
+</script>
+
+</body>
+</html>
