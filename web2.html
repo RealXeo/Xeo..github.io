@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XEO | GT Mod Menu</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #2ecc71; /* Gorilla Tag Green */
+            --card-glass: rgba(46, 204, 113, 0.03);
+            --border: rgba(46, 204, 113, 0.15);
+            --text-main: #ffffff;
+            --text-dim: #777777;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; }
+        body { background: var(--bg); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+
+        /* --- Custom Green Glow --- */
+        .green-glow {
+            position: fixed; width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(46, 204, 113, 0.07) 0%, transparent 70%);
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: -1; filter: blur(100px);
+        }
+
+        #cursor { position: fixed; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 30000; box-shadow: 0 0 15px var(--accent); }
+        #cursor-follower { position: fixed; width: 35px; height: 35px; border: 1.5px solid var(--accent); border-radius: 50%; pointer-events: none; z-index: 30000; opacity: 0.5; }
+
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 25px 8%; backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--border); background: rgba(0, 0, 0, 0.8);
+        }
+        .logo-container { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.2rem; }
+        .accent-text { color: var(--accent); }
+
+        .btn-back {
+            text-decoration: none; color: var(--text-dim); font-size: 0.75rem; 
+            font-weight: 700; text-transform: uppercase; transition: 0.3s;
+        }
+        .btn-back:hover { color: #fff; }
+
+        .hero { padding: 180px 8% 100px; max-width: 1400px; margin: 0 auto; }
+        .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+        
+        .card { 
+            background: var(--card-glass); border: 1px solid var(--border); 
+            border-radius: 24px; padding: 40px; backdrop-filter: blur(10px);
+            transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .card:hover { border-color: var(--accent); background: rgba(46, 204, 113, 0.06); transform: translateY(-5px); }
+
+        .col-12 { grid-column: span 12; } .col-8 { grid-column: span 8; } .col-4 { grid-column: span 4; }
+
+        .label { color: var(--accent); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 800; margin-bottom: 15px; display: block; }
+        h1 { font-size: 4.5rem; letter-spacing: -3px; line-height: 0.85; margin-bottom: 20px; }
+        p { color: var(--text-dim); line-height: 1.6; }
+
+        .feature-list { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .feature-item { 
+            font-family: 'Fira Code', monospace; font-size: 0.8rem; color: #aaa;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .feature-item::before { content: '>'; color: var(--accent); }
+
+        .download-box {
+            background: var(--accent); color: #000; padding: 20px; border-radius: 12px;
+            text-align: center; font-weight: 800; text-decoration: none; display: block;
+            margin-top: 20px; transition: 0.3s; text-transform: uppercase;
+        }
+        .download-box:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(46, 204, 113, 0.3); }
+
+        .version-tag {
+            display: inline-block; padding: 4px 12px; border: 1px solid var(--accent);
+            border-radius: 100px; color: var(--accent); font-size: 0.7rem; font-weight: 700; margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-follower"></div>
+<div class="green-glow"></div>
+
+<nav>
+    <div class="logo-container">
+        <span class="accent-text">XEO</span> // GORILLA TAG
+    </div>
+    <a href="index.html" class="btn-back">← Back to Core</a>
+</nav>
+
+<main class="hero">
+    <div class="bento">
+        <div class="card col-8">
+            <div class="version-tag">v2.4.0 STABLE</div>
+            <span class="label">Project Monke</span>
+            <h1>EVOLVED<br><span class="accent-text">EXECUTION.</span></h1>
+            <p>The premier internal menu for Gorilla Tag, redesigned for the 2026 XEO framework. Undetected, optimized, and built for the competitive ecosystem.</p>
+            
+            <div class="feature-list">
+                <div class="feature-item">Insta-TP Rig/Soon!</div>
+                <div class="feature-item">Bone ESP (Custom Colors)/Soon!</div>
+                <div class="feature-item">Dynamic Long Arm/Soon!</div>
+                <div class="feature-item">Steam Platforms</div>
+                <div class="feature-item">Room Crasher Protection/Soon!</div>
+                <div class="feature-item">Ghost Monke Mode/Kind Good</div>
+            </div>
+        </div>
+
+        <div class="card col-4" style="display: flex; flex-direction: column; justify-content: center;">
+            <span class="label">Source: Registry</span>
+            <h2 style="margin-bottom: 10px;">Ready to Inject?</h2>
+            <p style="font-size: 0.85rem; margin-bottom: 30px;">Requires Xeo Core Build 1.3.15 to run effectively.</p>
+            
+            <a href="#" class="download-box">Retrieve .DLL</a>
+            <p style="font-size: 0.6rem; text-align: center; margin-top: 15px; letter-spacing: 1px;">MD5: 8F2A...B9C1</p>
+        </div>
+
+        <div class="card col-12" style="padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; gap: 40px;">
+                <div>
+                    <span class="label" style="margin: 0;">Status</span>
+                    <span style="color: var(--accent); font-weight: 800;">UNDETECTED</span>
+                </div>
+                <div>
+                    <span class="label" style="margin: 0;">Last Updated</span>
+                    <span style="color: #fff; font-weight: 800;">2 HOURS AGO</span>
+                </div>
+            </div>
+            <div style="font-family: 'Fira Code', monospace; font-size: 0.7rem; color: #444;">
+                CONNECTION: SECURE_SSL_TYPE_4
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    
+    window.addEventListener('mousemove', e => {
+        gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
+        gsap.to(follower, { x: e.clientX - 16, y: e.clientY - 16, duration: 0.12 });
+    });
+
+    // Fade in effect on load
+    window.onload = () => {
+        gsap.from(".card", {
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power4.out"
+        });
+    };
+</script>
+
+</body>
+</html>
